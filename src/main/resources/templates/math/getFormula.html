@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>간단한 숫자를 복잡하게 표현하기</title>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+    <style>
+        div.result {
+            display: none
+        }
+    </style>
+</head>
+<body>
+<form action="math/getFormula" method="post" id="getFormula">
+    <input type="number" name="number" id="number"/>
+    <input type="submit" value="식 구하기" id="submitBtn" />
+</form>
+<div class="result">
+<input id="result" readonly/>
+<button class='copyBtn' data-clipboard-target='#result'>복사</button>
+</div>
+<script>
+new ClipboardJS('.copyBtn');
+$("#submitBtn").click(function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: "getFormula",
+        type: "POST",
+        data: $("#getFormula").serialize(),
+        dataType: 'json',
+        beforeSend: function(xhr) {
+            if (!$("input[type='number']").val()) {
+                xhr.abort();
+                alert("숫자를 입력해주세요");
+            }
+        }
+    }).done(function(data) {
+        console.log("done "+data);
+        $("#result").val(data.result);
+        $("div.result").css("display", "block");
+    }).fail(function( jqXHR, textStatus ) {
+        console.log("failed "+jqXHR+" "+textStatus);
+    });
+});
+
+</script>
+</body>
+</html>
